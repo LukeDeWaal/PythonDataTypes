@@ -26,6 +26,16 @@ class SingleNode(Node):
 
         self.__next = None
 
+    def __eq__(self, other):
+        if type(other) != SingleNode:
+            return False
+
+        if type(other) == SingleNode:
+            if self.get_item() == other.get_item():
+                return True
+            else:
+                return False
+
     def get_next(self):
         return self.__next
 

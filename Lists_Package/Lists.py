@@ -23,7 +23,7 @@ class SinglyLinkedList(object):
 
         else:
             if isinstance(iterable, Iterable):
-                for item in reversed(iterable):
+                for item in iterable:
                     self.insert(item)
             else:
                 raise TypeError("Object is not iterable")
@@ -185,10 +185,11 @@ class SinglyLinkedList(object):
         self.__head = node
 
     def insert(self, item, idx=0):
+
         if idx >= self.size() and self.size() != 0:
             raise IndexError("Index is out of range")
 
-        if self.size() == 0:
+        if self.is_empty():
             self.set_head(node=SingleNode(item))
             self.__size += 1
 
@@ -340,7 +341,7 @@ class SinglyLinkedList(object):
             SinglyLinkedList.__quickSort(arr, pi + 1, high)
 
     def sort(self, method, order='+'):
-
+        method = method.lower()
         if method == 'insertion':
 
             for i in range(1, self.size()):
@@ -373,35 +374,107 @@ class SinglyLinkedList(object):
 
             self.__quickSort(self, 0, self.size()-1)
 
+        if order == '-':
+            self.reverse()
+
     def reverse(self):
         return self.__reversed__()
 
 
 class DoublyLinkedList(object):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, iterable=None, *args, **kwargs):
 
         self.__size = 0
         self.__head = None
         self.__tail = None
 
+        self.__cur = None
+
+        if iterable is None:
+            pass
+
+        else:
+            if isinstance(iterable, Iterable):
+                for item in iterable:
+                    self.insert(item)
+            else:
+                raise TypeError("Object is not iterable")
+
     def __str__(self):
-        pass
+        string = "DLL:[ "
+        for item in self:
+            string += f"{item}, "
+
+        if self.size() != 0:
+            string = string[:-2]
+
+        else:
+            string = string[:-1]
+
+        string += " ]"
+        return string
 
     def __iter__(self):
-        pass
+        self.__cur = self.get_head()
+        return self
 
     def __next__(self):
-        pass
+        if self.__cur is None:
+            raise StopIteration()
 
-    def __getitem__(self, item):
-        pass
+        result = self.__cur.get_item()
+        self.__cur = self.__cur.get_next()
+        return result
+
+    def __getitem__(self, key):
+        self.__cur = self.__head
+
+        if type(key) != slice:
+
+            for idx in range(self.size()):
+                if idx == key:
+                    return self.__cur.get_item()
+
+                else:
+                    self.__cur = self.__cur.get_next()
+
+        elif type(key) == slice:
+
+            newlist = SinglyLinkedList()
+
+            start, stop, step = key.start, key.stop, key.step
+
+            if start is None:
+                start = 0
+
+            if step is None:
+                step = 1
+
+            if stop is None:
+                stop = self.size()
+
+            for idx in range(self.size()):
+                if idx in range(start, stop, step):
+                    newlist.insert(self.__cur.get_item())
+                    self.__cur = self.__cur.get_next()
+                else:
+                    self.__cur = self.__cur.get_next()
+
+            return newlist
 
     def __setitem__(self, key, value):
-        pass
+        self.__cur = self.__head
+
+        for idx in range(self.size()):
+            if idx == key:
+                self.__cur.set_item(value)
+                return
+            else:
+                self.__cur = self.__cur.get_next()
 
     def __len__(self):
-        pass
+        return self.size()
 
     def __eq__(self, other):
         pass
@@ -422,32 +495,87 @@ class DoublyLinkedList(object):
         pass
 
     def get_head(self):
-        pass
+        return self.__head
 
-    def set_head(self, item):
-        pass
+    def set_head(self, node):
+        self.__head = node
 
     def get_tail(self):
-        pass
+        return self.__tail
 
-    def set_tail(self):
-        pass
+    def set_tail(self, node):
+        self.__tail = node
 
-    def insert(self, item):
-        pass
+    def is_empty(self):
+        return True if self.size() == 0 else False
+
+    def insert(self, item, idx=0):
+
+        if idx >= self.size() and self.size() != 0:
+            raise IndexError("Index is out of range")
+
+        if self.is_empty():
+            self.set_head(DoubleNode(item=item))
+            self.set_tail(self.get_head())
+
+        elif not self.is_empty() and idx == 0:
+            old_head = self.get_head()
+            self.set_head(DoubleNode(item=item))
+            self.__head.set_next(old_head)
+            old_head.set_prev(self.__head)
+
+        elif not self.is_empty() and idx != 0:
+
+            cur = self.get_head()
+            new = DoubleNode(item=item)
+
+            for i in range(self.size()):
+                if i == idx:
+                    prev = cur.get_prev()
+
+                    prev.set_next(new)
+                    new.set_prev(prev)
+                    new.set_next(cur)
+                    cur.set_prev(new)
+                    break
+
+                cur = cur.get_next()
+
+        self.__size += 1
 
     def size(self):
-        pass
+        return self.__size
 
     def delete(self, item):
-        pass
+
+        cur = self.get_head()
+
+        for item_i in self:
+            if item_i == item:
+                prev = cur.get_prev()
+                nxt = cur.get_next()
+
+                prev.set_next(nxt)
+                nxt.set_prev(prev)
+                break
+
+            cur = cur.get_next()
 
     def pop(self, idx):
-        pass
+
+        cur = self.get_head()
+
+        for i in range(self.size()):
+            if i == idx:
+                prev = cur.get_prev()
+                nxt = cur.get_next()
+
+                prev.set_next(nxt)
+                nxt.set_prev(prev)
+                return cur.get_item()
+
+            cur = cur.get_next()
 
 
-SLL = SinglyLinkedList([np.random.randint(0, 10) for _ in range(10)])
-print(SLL)
+DLL= DoublyLinkedList([np.random.randint(0,10) for i in range(10)])
 
-SLL*[1,2,3,4,5,6,7,8,9,10]
-print(SLL)

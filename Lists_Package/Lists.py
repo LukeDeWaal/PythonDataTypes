@@ -9,9 +9,9 @@ Define Different List Types
 """
 
 
-class SinglyLinkedList(object):
+class SLList(object):
 
-    def __init__(self, iterable=None, *args, **kwargs):
+    def __init__(self, iterable=None, maintain_order=True, *args, **kwargs):
 
         self.__size = 0     # N-elements
         self.__head = None  # Head of the list
@@ -22,6 +22,10 @@ class SinglyLinkedList(object):
             pass
 
         else:
+            if maintain_order:
+                iterable = reversed(iterable)
+            else:
+                pass
             if isinstance(iterable, Iterable):
                 for item in iterable:
                     self.insert(item)
@@ -61,6 +65,9 @@ class SinglyLinkedList(object):
 
         if type(key) != slice:
 
+            if key < 0:
+                key = self.size() + key
+
             for idx in range(self.size()):
                 if idx == key:
                     return self.__cur.get_item()
@@ -68,9 +75,11 @@ class SinglyLinkedList(object):
                 else:
                     self.__cur = self.__cur.get_next()
 
+            raise IndexError
+
         elif type(key) == slice:
 
-            newlist = SinglyLinkedList()
+            newlist = SLList()
 
             start, stop, step = key.start, key.stop, key.step
 
@@ -285,8 +294,8 @@ class SinglyLinkedList(object):
             L = arr[:mid]  # Dividing the array elements
             R = arr[mid:]  # into 2 halves
 
-            SinglyLinkedList.__mergeSort(L)  # Sorting the first half
-            SinglyLinkedList.__mergeSort(R)  # Sorting the second half
+            SLList.__mergeSort(L)  # Sorting the first half
+            SLList.__mergeSort(R)  # Sorting the second half
 
             i = j = k = 0
 
@@ -333,12 +342,12 @@ class SinglyLinkedList(object):
         if low < high:
             # pi is partitioning index, arr[p] is now
             # at right place
-            pi = SinglyLinkedList.__partition(arr, low, high)
+            pi = SLList.__partition(arr, low, high)
 
             # Separately sort elements before
             # partition and after partition
-            SinglyLinkedList.__quickSort(arr, low, pi - 1)
-            SinglyLinkedList.__quickSort(arr, pi + 1, high)
+            SLList.__quickSort(arr, low, pi - 1)
+            SLList.__quickSort(arr, pi + 1, high)
 
     def sort(self, method, order='+'):
         method = method.lower()
@@ -381,7 +390,7 @@ class SinglyLinkedList(object):
         return self.__reversed__()
 
 
-class DoublyLinkedList(object):
+class DLList(object):
 
     def __init__(self, iterable=None, *args, **kwargs):
 
@@ -441,7 +450,7 @@ class DoublyLinkedList(object):
 
         elif type(key) == slice:
 
-            newlist = SinglyLinkedList()
+            newlist = SLList()
 
             start, stop, step = key.start, key.stop, key.step
 
@@ -577,5 +586,45 @@ class DoublyLinkedList(object):
             cur = cur.get_next()
 
 
-DLL= DoublyLinkedList([np.random.randint(0,10) for i in range(10)])
+if __name__ == "__main__":
+
+    class ListTestCases(ut.TestCase):
+
+        def setUp(self):
+            self.SLL_e = SLList()
+            self.DLL_e = DLList()
+
+            self.SLL_i = SLList([1,3,5,7,5,23,1,3,4,6,8,7,4,2,2,4,5,7,9,0,7,5,3,12,3,5,6,6])
+            self.DLL_I = DLList([16,3,45,6,5,3,2,34,5,8,8,6,4,3,2,21,4,5,7,8,5,4,3,2,4,5,0])
+
+        def test_iteration(self):
+            pass
+
+        def test_indexing(self):
+            pass
+
+        def test_insertion(self):
+            pass
+
+        def test_pop(self):
+            pass
+
+        def test_remove(self):
+            pass
+
+        def test_arithmetic(self):
+            pass
+
+        def test_advanced_math(self):
+            pass
+
+        def test_sorting(self):
+            pass
+
+    def run_TestCases():
+        suite = ut.TestLoader().loadTestsFromTestCase(ListTestCases)
+        ut.TextTestRunner(verbosity=2).run(suite)
+
+
+    run_TestCases()
 
